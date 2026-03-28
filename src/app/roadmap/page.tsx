@@ -4,7 +4,7 @@ export default function RoadmapPage() {
       phase: 'Phase 1',
       title: 'Foundation',
       status: 'completed',
-      period: 'Mar 2026',
+      period: 'Mar 27, 2026',
       items: [
         'Platform architecture and K8s deployment',
         'Spec-ingestion plugin for automated app generation',
@@ -14,57 +14,57 @@ export default function RoadmapPage() {
     },
     {
       phase: 'Phase 2',
-      title: 'Scale to 14',
+      title: 'Scale to 20',
       status: 'completed',
-      period: 'Mar 2026',
+      period: 'Mar 27, 2026',
       items: [
-        'AI/Analytics apps: ChartGen AI, AnomalyWatch',
+        'AI/Analytics: ChartGen AI, AnomalyWatch',
         'Creator Platform batch: 8 apps deployed',
-        'AI/Creative: ChildArt Storybook Maker',
-        'Batch deployment pipeline (2 concurrent builds)',
+        'TravelHub super-app (15 pages)',
+        'Showroom portfolio app launched',
       ],
     },
     {
       phase: 'Phase 3',
-      title: 'Pipeline Automation',
-      status: 'in-progress',
-      period: 'Q2 2026',
+      title: 'Autopilot Pipeline v2',
+      status: 'completed',
+      period: 'Mar 27, 2026',
       items: [
-        'Apps 15-50: Expand into 8 new categories',
-        'Automated quality assurance checks',
-        'Performance monitoring dashboard',
-        'Template library expansion',
+        'Category-aware prompts (17 industry templates)',
+        'File-locked registry, skip-deployed, disk checks',
+        'Concurrency pool with slot backfill',
+        '4-app validation: Healthcare, SaaS, Food, Real Estate',
       ],
     },
     {
       phase: 'Phase 4',
-      title: 'Scale to 200',
-      status: 'planned',
-      period: 'Q2-Q3 2026',
+      title: 'Scale to 84+',
+      status: 'in-progress',
+      period: 'Mar 28, 2026',
       items: [
-        'Apps 51-200: Full category coverage',
-        'E-commerce, SaaS, Portfolio, Education templates',
-        'Health & Fitness, Food & Beverage verticals',
-        'Multi-language support',
+        '84 apps deployed across 14 categories',
+        'Travel, Legal, Finance, Healthcare, Green, Media batches',
+        '116+ remaining in pipeline (IDs 270-400)',
+        '3 build failures queued for retry',
       ],
     },
     {
       phase: 'Phase 5',
-      title: 'Scale to 400',
+      title: 'Scale to 200',
       status: 'planned',
-      period: 'Q3-Q4 2026',
+      period: 'Mar 28-29, 2026',
       items: [
-        'Apps 201-400: Enterprise-scale deployment',
-        'Advanced AI personalization per app',
+        'Complete IDs 201-400 (remaining 116)',
+        'Retry failed builds',
+        'Website ingestion for real business data',
         'Custom domain automation',
-        'Real-time analytics integration',
       ],
     },
     {
       phase: 'Phase 6',
       title: 'Platform Maturity',
       status: 'planned',
-      period: '2027',
+      period: 'Q2 2026',
       items: [
         'Self-service app generation portal',
         'Marketplace for templates and plugins',
@@ -72,12 +72,6 @@ export default function RoadmapPage() {
         'Multi-cloud deployment support',
       ],
     },
-  ];
-
-  const upcomingCategories = [
-    'E-commerce', 'SaaS Tools', 'Portfolio Sites', 'Education',
-    'Health & Fitness', 'Food & Beverage', 'Real Estate', 'Travel',
-    'Finance', 'Entertainment', 'Non-Profit', 'Photography',
   ];
 
   const statusColor: Record<string, string> = {
@@ -97,35 +91,42 @@ export default function RoadmapPage() {
       <div className="text-center mb-12">
         <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">Roadmap</h1>
         <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-          The journey from 14 apps to 400+. Here is what is next for the Paperclip platform.
+          From 0 to 200+ apps in 48 hours. Here is where we are and what is next.
         </p>
       </div>
 
       {/* Pipeline Counter */}
       <div className="glass-card p-8 text-center mb-12">
         <div className="text-6xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-          200+
+          84 / 200
         </div>
-        <div className="text-gray-400 mt-2">Apps in the deployment pipeline (IDs 201-400)</div>
+        <div className="text-gray-400 mt-2">Apps deployed out of 200 target</div>
+        <div className="w-full max-w-md mx-auto mt-4 h-3 bg-gray-800 rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all" style={{ width: '42%' }} />
+        </div>
         <div className="flex justify-center gap-8 mt-6">
           <div>
-            <div className="text-2xl font-bold text-accent">14</div>
+            <div className="text-2xl font-bold text-accent">84</div>
             <div className="text-xs text-gray-500">Deployed</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-yellow-400">36</div>
+            <div className="text-2xl font-bold text-yellow-400">2</div>
             <div className="text-xs text-gray-500">Building</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-gray-400">350</div>
+            <div className="text-2xl font-bold text-gray-400">114</div>
             <div className="text-xs text-gray-500">Queued</div>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-red-400">3</div>
+            <div className="text-xs text-gray-500">Failed</div>
           </div>
         </div>
       </div>
 
       {/* Timeline */}
       <div className="space-y-6 mb-16">
-        {phases.map((phase, i) => (
+        {phases.map((phase) => (
           <div key={phase.phase} className="glass-card p-6 relative overflow-hidden">
             {phase.status === 'in-progress' && (
               <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-secondary" />
@@ -165,11 +166,18 @@ export default function RoadmapPage() {
         ))}
       </div>
 
-      {/* Upcoming Categories */}
+      {/* Active Categories */}
       <div className="glass-card p-8">
-        <h2 className="text-2xl font-bold text-white text-center mb-6">Upcoming Categories</h2>
+        <h2 className="text-2xl font-bold text-white text-center mb-6">Active Categories</h2>
         <div className="flex flex-wrap justify-center gap-3">
-          {upcomingCategories.map((cat) => (
+          {[
+            'Travel & Booking', 'Legal & Compliance', 'Financial Services',
+            'Healthcare Tech', 'Green & Sustainability', 'Media & Publishing',
+            'Creator Platform', 'Local Business', 'AI/Analytics', 'AI/Creative',
+            'SaaS & Developer Tools', 'Food Tech', 'Real Estate Tech',
+            'Logistics & Supply Chain', 'B2B Enterprise', 'Education & Kids',
+            'Sports & Recreation',
+          ].map((cat) => (
             <span
               key={cat}
               className="px-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-xl text-sm text-gray-300 hover:border-primary/50 hover:text-primary transition-colors"

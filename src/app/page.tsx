@@ -5,9 +5,9 @@ import { apps, categories } from '@/data/apps';
 import AppCard from '@/components/AppCard';
 
 const stats = [
-  { label: 'Apps Deployed', value: '14+', color: 'text-primary' },
-  { label: 'In Pipeline', value: '200+', color: 'text-secondary' },
-  { label: 'Categories', value: '4', color: 'text-accent' },
+  { label: 'Apps Deployed', value: '84', color: 'text-primary' },
+  { label: 'In Pipeline', value: '116+', color: 'text-secondary' },
+  { label: 'Categories', value: '14', color: 'text-accent' },
   { label: 'Uptime', value: '99.9%', color: 'text-yellow-400' },
 ];
 
