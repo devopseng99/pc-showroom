@@ -22,8 +22,14 @@ export function ServerDrivenLayout() {
     return <div className="text-gray-500 text-center py-10">No UI config loaded</div>;
   }
 
+  // Auto-insert FilterBar if config has filters enabled
+  const FilterBar = componentRegistry["FilterBar"];
+
   return (
     <div className="space-y-6">
+      {uiConfig.filters && FilterBar && (
+        <FilterBar apps={apps} stats={stats} config={uiConfig} section={{}} />
+      )}
       {uiConfig.sections.map((section: any, i: number) => {
         const Component = componentRegistry[section.component];
         if (!Component) {

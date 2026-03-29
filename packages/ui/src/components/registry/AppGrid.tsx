@@ -1,16 +1,20 @@
 import { useState } from "react";
 import { AppCard } from "./AppCard.js";
 import { AppDetailModal } from "./AppDetailModal.js";
+import { useFilters } from "../../hooks/useFilters.js";
 import type { RegistryProps } from "./index.js";
 
 export function AppGrid({ apps, section, config }: RegistryProps) {
   const [selectedApp, setSelectedApp] = useState<any>(null);
+  const { filterApps } = useFilters();
+  apps = filterApps(apps);
   const groupBy = section.groupBy;
   const cardTemplate = section.cardTemplate || "default";
   const collapsible = section.collapsible;
   const cols = config?.theme?.gridColumns || { sm: 1, md: 2, lg: 3, xl: 4 };
 
-  const gridClass = `grid gap-3 grid-cols-${cols.sm} sm:grid-cols-${cols.sm} md:grid-cols-${cols.md} lg:grid-cols-${cols.lg} xl:grid-cols-${cols.xl}`;
+  // Use fixed responsive grid classes since Tailwind can't handle dynamic values
+  const gridClass = "grid gap-3 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
 
   if (groupBy) {
     const groups = new Map<string, any[]>();

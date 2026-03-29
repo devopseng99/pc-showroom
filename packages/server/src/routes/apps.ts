@@ -37,6 +37,29 @@ appsRouter.get("/", async (req, res) => {
   }
 });
 
+// Toggle featured
+appsRouter.post("/:appId/featured", async (req, res) => {
+  try {
+    const appId = parseInt(req.params.appId);
+    const [app] = await db
+      .select()
+      .from(schema.showroomApps)
+      .where(eq(schema.showroomApps.appId, appId));
+
+    if (!app) return res.status(404).json({ error: "App not found" });
+
+    const [updated] = await db
+      .update(schema.showroomApps)
+      .set({ featured: !app.featured, updatedAt: new Date() })
+      .where(eq(schema.showroomApps.appId, appId))
+      .returning();
+
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update" });
+  }
+});
+
 appsRouter.get("/:appId", async (req, res) => {
   try {
     const appId = parseInt(req.params.appId);
