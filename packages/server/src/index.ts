@@ -27,7 +27,7 @@ app.use("/api/events", eventsRouter);
 // Serve static UI in production
 const uiDist = path.resolve(__dirname, "../../ui/dist");
 app.use(express.static(uiDist));
-app.get("*", (_req, res) => {
+app.get("/{*path}", (_req, res) => {
   res.sendFile(path.join(uiDist, "index.html"));
 });
 

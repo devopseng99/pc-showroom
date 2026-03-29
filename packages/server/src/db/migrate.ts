@@ -1,13 +1,7 @@
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
-import path from "path";
-import { fileURLToPath } from "url";
-import { sql } from "drizzle-orm";
 import * as schema from "./schema.js";
 import { DEFAULT_UI_CONFIG } from "@pc-showroom/shared";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export async function runMigrations() {
   const connectionString =
@@ -15,20 +9,8 @@ export async function runMigrations() {
   const client = postgres(connectionString, { max: 1 });
   const db = drizzle(client, { schema });
 
-  // Run drizzle migrations
-  const migrationsFolder = path.resolve(__dirname, "../../drizzle");
-  try {
-    await migrate(db, { migrationsFolder });
-    console.log("[migrate] Drizzle migrations applied");
-  } catch (err: any) {
-    // If no migrations folder yet, create tables directly
-    if (err.code === "ENOENT" || err.message?.includes("no such file")) {
-      console.log("[migrate] No migrations folder, creating tables via push...");
-      await createTablesDirectly(client);
-    } else {
-      throw err;
-    }
-  }
+  // Create tables directly (no migration files needed)
+  await createTablesDirectly(client);
 
   // Seed default UI config if none exists
   const existing = await db.select().from(schema.uiVersions).limit(1);
