@@ -1,6 +1,13 @@
 type SSEHandler = (event: any) => void;
 
+const USE_STATIC = !import.meta.env.VITE_API_URL;
+
 export function createSSEClient(onEvent: SSEHandler) {
+  // In static mode, SSE is not available — return a no-op client
+  if (USE_STATIC) {
+    return { close() {} };
+  }
+
   let es: EventSource | null = null;
   let retryTimeout: ReturnType<typeof setTimeout> | null = null;
 

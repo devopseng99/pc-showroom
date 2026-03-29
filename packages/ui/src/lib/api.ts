@@ -1,34 +1,50 @@
-const BASE = "/api";
+import staticData from "./static-data.json";
+
+const USE_STATIC = !import.meta.env.VITE_API_URL;
+const BASE = import.meta.env.VITE_API_URL || "/api";
+
+async function fetchJSON(url: string) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch ${url}`);
+  return res.json();
+}
 
 export async function fetchApps(params?: Record<string, string>) {
+  if (USE_STATIC) {
+    return { apps: staticData.apps, total: staticData.apps.length };
+  }
   const qs = params ? "?" + new URLSearchParams(params).toString() : "";
-  const res = await fetch(`${BASE}/apps${qs}`);
-  if (!res.ok) throw new Error("Failed to fetch apps");
-  return res.json();
+  return fetchJSON(`${BASE}/apps${qs}`);
 }
 
 export async function fetchApp(appId: number) {
-  const res = await fetch(`${BASE}/apps/${appId}`);
-  if (!res.ok) throw new Error("Failed to fetch app");
-  return res.json();
+  if (USE_STATIC) {
+    const app = staticData.apps.find((a: any) => a.appId === appId);
+    if (!app) throw new Error("App not found");
+    return { ...app, events: [] };
+  }
+  return fetchJSON(`${BASE}/apps/${appId}`);
 }
 
 export async function fetchStats() {
-  const res = await fetch(`${BASE}/stats`);
-  if (!res.ok) throw new Error("Failed to fetch stats");
-  return res.json();
+  if (USE_STATIC) {
+    return staticData.stats;
+  }
+  return fetchJSON(`${BASE}/stats`);
 }
 
 export async function fetchUIConfig() {
-  const res = await fetch(`${BASE}/ui-config`);
-  if (!res.ok) throw new Error("Failed to fetch UI config");
-  return res.json();
+  if (USE_STATIC) {
+    return staticData.uiConfig;
+  }
+  return fetchJSON(`${BASE}/ui-config`);
 }
 
 export async function fetchUIVersions() {
-  const res = await fetch(`${BASE}/ui-config/versions`);
-  if (!res.ok) throw new Error("Failed to fetch versions");
-  return res.json();
+  if (USE_STATIC) {
+    return [staticData.uiConfig];
+  }
+  return fetchJSON(`${BASE}/ui-config/versions`);
 }
 
 export async function createUIVersion(data: any) {
