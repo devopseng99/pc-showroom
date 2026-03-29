@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pc-showroom-app
+  namespace: pc-showroom
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pc-showroom-app
+  template:
+    metadata:
+      labels:
+        app: pc-showroom-app
+    spec:
+      serviceAccountName: pc-showroom-sa
+      nodeSelector:
+        kubernetes.io/hostname: mgplcb05
+      containers:
+        - name: app
+          image: localhost/pc-showroom:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: showroom-pg-secret
+                  key: DATABASE_URL
+            - name: REDIS_HOST
+              value: redis-pc-ng-master.paperclip-v3.svc.cluster.local
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-credentials
+                  key: password
+            - name: PORT
+              value: "3000"
+            - name: NODE_ENV
+              value: production
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 768Mi
+              cpu: 500m
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 30
