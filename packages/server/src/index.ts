@@ -10,6 +10,7 @@ import { CrdSyncer } from "./services/crd-syncer.js";
 import { RedisSubscriber } from "./services/redis-subscriber.js";
 import { sseBroadcaster } from "./services/sse-broadcaster.js";
 import { runMigrations } from "./db/migrate.js";
+import { requireAuth } from "./middleware/auth.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -17,7 +18,12 @@ const PORT = parseInt(process.env.PORT || "3000");
 
 app.use(express.json());
 
-// API routes
+// Auth verification endpoint
+app.post("/api/auth/verify", requireAuth, (_req, res) => {
+  res.json({ valid: true });
+});
+
+// Public API routes (read-only)
 app.use("/api/apps", appsRouter);
 app.use("/api/stats", statsRouter);
 app.use("/api/health", healthRouter);
@@ -37,11 +43,11 @@ async function start() {
 
   console.log("[showroom] Starting CRD syncer...");
   const crdSyncer = new CrdSyncer();
-  crdSyncer.start();
+  await crdSyncer.start();
 
   console.log("[showroom] Starting Redis subscriber...");
   const redisSub = new RedisSubscriber();
-  redisSub.start();
+  await redisSub.start();
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`[showroom] Server listening on :${PORT}`);

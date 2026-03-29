@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@kubernetes/client-node": "^1.4.0",
     "@pc-showroom/shared": "workspace:*",
     "drizzle-orm": "^0.38.0",
     "express": "^5.0.1",

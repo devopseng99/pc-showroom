@@ -3,6 +3,7 @@ import { db, schema } from "../db/index.js";
 import { eq, desc } from "drizzle-orm";
 import { createUIVersionSchema } from "@pc-showroom/shared";
 import { sseBroadcaster } from "../services/sse-broadcaster.js";
+import { requireAuth } from "../middleware/auth.js";
 
 export const uiConfigRouter = Router();
 
@@ -35,8 +36,8 @@ uiConfigRouter.get("/versions", async (_req, res) => {
   }
 });
 
-// Create new version
-uiConfigRouter.post("/", async (req, res) => {
+// Create new version (auth required)
+uiConfigRouter.post("/", requireAuth, async (req, res) => {
   try {
     const parsed = createUIVersionSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: parsed.error.issues });
@@ -52,8 +53,8 @@ uiConfigRouter.post("/", async (req, res) => {
   }
 });
 
-// Activate a version
-uiConfigRouter.post("/:version/activate", async (req, res) => {
+// Activate a version (auth required)
+uiConfigRouter.post("/:version/activate", requireAuth, async (req, res) => {
   try {
     const ver = parseInt(req.params.version);
 

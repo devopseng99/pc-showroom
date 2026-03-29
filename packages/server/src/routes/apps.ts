@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db, schema } from "../db/index.js";
 import { eq, like, sql, and, inArray } from "drizzle-orm";
+import { requireAuth } from "../middleware/auth.js";
 
 export const appsRouter = Router();
 
@@ -37,8 +38,8 @@ appsRouter.get("/", async (req, res) => {
   }
 });
 
-// Toggle featured
-appsRouter.post("/:appId/featured", async (req, res) => {
+// Toggle featured (auth required)
+appsRouter.post("/:appId/featured", requireAuth, async (req, res) => {
   try {
     const appId = parseInt(req.params.appId);
     const [app] = await db
@@ -57,6 +58,46 @@ appsRouter.post("/:appId/featured", async (req, res) => {
     res.json(updated);
   } catch (err) {
     res.status(500).json({ error: "Failed to update" });
+  }
+});
+
+// Update app fields (auth required)
+appsRouter.patch("/:appId", requireAuth, async (req, res) => {
+  try {
+    const appId = parseInt(req.params.appId);
+    const allowed = ["category", "featured", "priority", "screenshotUrl"];
+    const updates: any = { updatedAt: new Date() };
+    for (const key of allowed) {
+      if (req.body[key] !== undefined) updates[key] = req.body[key];
+    }
+    const [updated] = await db
+      .update(schema.showroomApps)
+      .set(updates)
+      .where(eq(schema.showroomApps.appId, appId))
+      .returning();
+
+    if (!updated) return res.status(404).json({ error: "App not found" });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update" });
+  }
+});
+
+// Bulk update categories (auth required)
+appsRouter.post("/bulk-categorize", requireAuth, async (req, res) => {
+  try {
+    const { updates } = req.body; // [{ appId, category }]
+    let count = 0;
+    for (const u of updates) {
+      await db
+        .update(schema.showroomApps)
+        .set({ category: u.category, updatedAt: new Date() })
+        .where(eq(schema.showroomApps.appId, u.appId));
+      count++;
+    }
+    res.json({ updated: count });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to bulk categorize" });
   }
 });
 

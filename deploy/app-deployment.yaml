@@ -29,7 +29,7 @@ spec:
                   name: showroom-pg-secret
                   key: DATABASE_URL
             - name: REDIS_HOST
-              value: "10.43.228.108"
+              value: "redis-pc-ng-master.paperclip-v3.svc.cluster.local"
             - name: REDIS_PORT
               value: "6379"
             - name: REDIS_PASSWORD
@@ -39,6 +39,11 @@ spec:
                   key: password
             - name: PORT
               value: "3000"
+            - name: ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: showroom-admin-secret
+                  key: ADMIN_TOKEN
             - name: NODE_ENV
               value: production
           resources:

@@ -1,25 +1,51 @@
 import Redis from "ioredis";
+import dns from "dns/promises";
 import { db, schema } from "../db/index.js";
 import { eq } from "drizzle-orm";
 import { REDIS_EVENTS_CHANNEL } from "@pc-showroom/shared";
 import { sseBroadcaster } from "./sse-broadcaster.js";
 
+// Alpine musl getaddrinfo can't resolve K8s DNS.
+// Resolve FQDN via c-ares (dns.resolve4) before passing IP to ioredis.
+async function resolveHost(host: string): Promise<string> {
+  // If it's already an IP, return as-is
+  if (/^\d+\.\d+\.\d+\.\d+$/.test(host)) return host;
+  try {
+    const addrs = await dns.resolve4(host);
+    console.log(`[redis-sub] Resolved ${host} -> ${addrs[0]}`);
+    return addrs[0];
+  } catch (err: any) {
+    console.error(`[redis-sub] DNS resolve failed for ${host}:`, err.message);
+    throw err;
+  }
+}
+
 export class RedisSubscriber {
   private sub: Redis | null = null;
 
-  start() {
+  async start() {
     const redisHost =
       process.env.REDIS_HOST ||
       "redis-pc-ng-master.paperclip-v3.svc.cluster.local";
     const redisPort = parseInt(process.env.REDIS_PORT || "6379");
     const redisPassword = process.env.REDIS_PASSWORD || "";
 
+    let resolvedHost: string;
+    try {
+      resolvedHost = await resolveHost(redisHost);
+    } catch {
+      console.error("[redis-sub] Cannot resolve Redis host, will retry in 5s");
+      setTimeout(() => this.start(), 5000);
+      return;
+    }
+
     this.sub = new Redis({
-      host: redisHost,
+      host: resolvedHost,
       port: redisPort,
       password: redisPassword,
       retryStrategy: (times) => Math.min(times * 1000, 30_000),
       maxRetriesPerRequest: null,
+      enableOfflineQueue: true,
     });
 
     this.sub.on("connect", () => {

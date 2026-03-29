@@ -1,56 +1,42 @@
-import staticData from "./static-data.json";
+import { getAuthHeaders } from "../hooks/useAuth.js";
 
-const USE_STATIC = !import.meta.env.VITE_API_URL;
-const BASE = import.meta.env.VITE_API_URL || "/api";
+const BASE = "/api";
 
-async function fetchJSON(url: string) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch ${url}`);
+export async function fetchApps(params?: Record<string, string>) {
+  const qs = params ? "?" + new URLSearchParams(params).toString() : "";
+  const res = await fetch(`${BASE}/apps${qs}`);
+  if (!res.ok) throw new Error("Failed to fetch apps");
   return res.json();
 }
 
-export async function fetchApps(params?: Record<string, string>) {
-  if (USE_STATIC) {
-    return { apps: staticData.apps, total: staticData.apps.length };
-  }
-  const qs = params ? "?" + new URLSearchParams(params).toString() : "";
-  return fetchJSON(`${BASE}/apps${qs}`);
-}
-
 export async function fetchApp(appId: number) {
-  if (USE_STATIC) {
-    const app = staticData.apps.find((a: any) => a.appId === appId);
-    if (!app) throw new Error("App not found");
-    return { ...app, events: [] };
-  }
-  return fetchJSON(`${BASE}/apps/${appId}`);
+  const res = await fetch(`${BASE}/apps/${appId}`);
+  if (!res.ok) throw new Error("Failed to fetch app");
+  return res.json();
 }
 
 export async function fetchStats() {
-  if (USE_STATIC) {
-    return staticData.stats;
-  }
-  return fetchJSON(`${BASE}/stats`);
+  const res = await fetch(`${BASE}/stats`);
+  if (!res.ok) throw new Error("Failed to fetch stats");
+  return res.json();
 }
 
 export async function fetchUIConfig() {
-  if (USE_STATIC) {
-    return staticData.uiConfig;
-  }
-  return fetchJSON(`${BASE}/ui-config`);
+  const res = await fetch(`${BASE}/ui-config`);
+  if (!res.ok) throw new Error("Failed to fetch UI config");
+  return res.json();
 }
 
 export async function fetchUIVersions() {
-  if (USE_STATIC) {
-    return [staticData.uiConfig];
-  }
-  return fetchJSON(`${BASE}/ui-config/versions`);
+  const res = await fetch(`${BASE}/ui-config/versions`);
+  if (!res.ok) throw new Error("Failed to fetch versions");
+  return res.json();
 }
 
 export async function createUIVersion(data: any) {
   const res = await fetch(`${BASE}/ui-config`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error("Failed to create version");
@@ -60,7 +46,27 @@ export async function createUIVersion(data: any) {
 export async function activateUIVersion(version: number) {
   const res = await fetch(`${BASE}/ui-config/${version}/activate`, {
     method: "POST",
+    headers: { ...getAuthHeaders() },
   });
   if (!res.ok) throw new Error("Failed to activate version");
+  return res.json();
+}
+
+export async function toggleFeatured(appId: number) {
+  const res = await fetch(`${BASE}/apps/${appId}/featured`, {
+    method: "POST",
+    headers: { ...getAuthHeaders() },
+  });
+  if (!res.ok) throw new Error("Failed to toggle featured");
+  return res.json();
+}
+
+export async function updateApp(appId: number, data: any) {
+  const res = await fetch(`${BASE}/apps/${appId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update app");
   return res.json();
 }

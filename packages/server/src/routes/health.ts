@@ -17,10 +17,19 @@ healthRouter.get("/", async (_req, res) => {
 
   checks.sseClients = String(sseBroadcaster.clientCount);
 
+  const mem = process.memoryUsage();
+  const memory = {
+    rss: `${Math.round(mem.rss / 1024 / 1024)}Mi`,
+    heapUsed: `${Math.round(mem.heapUsed / 1024 / 1024)}Mi`,
+    heapTotal: `${Math.round(mem.heapTotal / 1024 / 1024)}Mi`,
+    external: `${Math.round(mem.external / 1024 / 1024)}Mi`,
+  };
+
   const allOk = checks.database === "ok";
   res.status(allOk ? 200 : 503).json({
     status: allOk ? "ok" : "degraded",
     checks,
+    memory,
     timestamp: new Date().toISOString(),
     uptime: Math.floor(process.uptime()),
   });
