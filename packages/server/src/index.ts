@@ -58,6 +58,10 @@ async function start() {
   process.on("SIGINT", shutdown);
 }
 
+process.on("unhandledRejection", (err) => {
+  console.error("[showroom] Unhandled rejection:", err);
+});
+
 start().catch((err) => {
   console.error("[showroom] Fatal error:", err);
   process.exit(1);

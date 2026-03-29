@@ -26,8 +26,16 @@ export class RedisSubscriber {
       console.log("[redis-sub] Connected to Redis");
     });
 
+    this.sub.on("reconnecting", (ms: number) => {
+      console.log(`[redis-sub] Reconnecting in ${ms}ms...`);
+    });
+
     this.sub.on("error", (err) => {
       console.error("[redis-sub] Redis error:", err.message);
+    });
+
+    this.sub.on("close", () => {
+      console.log("[redis-sub] Redis connection closed");
     });
 
     this.sub.subscribe(REDIS_EVENTS_CHANNEL, (err) => {

@@ -41,6 +41,10 @@ class SSEBroadcaster {
     }
   }
 
+  get clientCount() {
+    return this.clients.size;
+  }
+
   closeAll() {
     clearInterval(this.heartbeatTimer);
     for (const client of this.clients) {

@@ -100,7 +100,10 @@ export class CrdSyncer {
         console.log(`[crd-syncer] Synced ${items.length} CRDs, ${upserted} changed`);
       }
     } catch (err: any) {
-      console.error("[crd-syncer] Sync error:", err.message);
+      // Don't spam logs for kubectl not found (common during startup)
+      if (!err.message?.includes("command not found")) {
+        console.error("[crd-syncer] Sync error:", err.message?.slice(0, 200));
+      }
     } finally {
       this.syncing = false;
     }
