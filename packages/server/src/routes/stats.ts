@@ -38,9 +38,10 @@ statsRouter.get("/", async (_req, res) => {
     const stats = {
       total: total.count,
       deployed: phaseMap["Deployed"] || 0,
-      building: (phaseMap["Building"] || 0) + (phaseMap["Deploying"] || 0),
-      failed: phaseMap["Failed"] || 0,
+      deploying: phaseMap["Deploying"] || 0,
+      building: phaseMap["Building"] || 0,
       pending: (phaseMap["Pending"] || 0) + (phaseMap["Queued"] || 0),
+      failed: phaseMap["Failed"] || 0,
       byPipeline: Object.fromEntries(pipelineRows.map((r) => [r.pipeline, r.count])),
       byCategory: Object.fromEntries(categoryRows.map((r) => [r.category, r.count])),
     };

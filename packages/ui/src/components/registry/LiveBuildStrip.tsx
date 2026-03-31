@@ -1,7 +1,7 @@
 import type { RegistryProps } from "./index.js";
 
 export function LiveBuildStrip({ apps, section }: RegistryProps) {
-  const filterPhases = section.filter?.phase || ["Building", "Deploying"];
+  const filterPhases = section.filter?.phase || ["Building"];
   const active = apps.filter((a: any) =>
     (filterPhases as string[]).includes(a.phase)
   );

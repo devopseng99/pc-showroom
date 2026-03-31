@@ -59,10 +59,10 @@ export function SectionBuilder() {
       newSection.maxItems = 6;
     }
     if (componentKey === "LiveBuildStrip") {
-      newSection.filter = { phase: ["Building", "Deploying"] };
+      newSection.filter = { phase: ["Building"] };
     }
     if (componentKey === "StatsBar") {
-      newSection.props = { metrics: ["total", "deployed", "building", "failed"] };
+      newSection.props = { metrics: ["total", "deployed", "deploying", "building", "pending", "failed"] };
     }
     setEditSections([...(editSections || sections), newSection]);
     setShowAdd(false);
